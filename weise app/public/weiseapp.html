@@ -12,7 +12,15 @@
 		
 		/*Positionen sollen sich nicht gegenseitig beeinflussen:*/
 		div {position:absolute;}
-		
+        
+        /*Korrektur eines Fehlers im iPhone-Browser*/
+        #trolley {background: url('Trolley36/trolley_web.jpg') no-repeat center center fixed;
+        position:fixed;
+        background-size:contain; -moz-background-size:contain; -webkit-background-size:contain; -o-background-size:contain;
+        background-color:white;height:100vh;width:100vw;
+        background-position-x: 50%;
+        background-position-y: 50%;
+        }
 		/*Positionen: relativ zur Bildschirmmitte werden die Knöpfe und Hände über die Eigenschaft "margin" um Hundertstel der Höhe (vh) positioniert.*/
 		/*Die Zeigefinger sind im Folgenden auf den Knöpfen; weiter unten ist der Vektor gegeben, mit der sich eine Hand entfernt.*/
 		#knopf1 {width:3vh; height:3vh; border-radius:3vh; background:yellow;opacity:0;   left:50vw; margin-left:-7.6vh; top:50vh; margin-top:-7.5vh;}
@@ -136,7 +144,7 @@
 </head>
 
 <body><!--In diesem Bereich stehen nur Platzhalter für die Bilder und das Audio-Element.--!>
-	<div id="trolley" style="background: url('Trolley36/trolley_web.jpg') no-repeat center center fixed;position:fixed; background-size:contain; -moz-background-size:contain; -webkit-background-size:contain; -o-background-size:contain; background-color:white;height:100vh;width:100vw;">&#8203;</div>
+	<div id="trolley">&#8203;</div>
 
 	<div id="hände">&#8203;</div>
 	<div id="knöpfe">&#8203;</div>
