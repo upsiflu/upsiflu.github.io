@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+	<title>weise app</title>
+	<style>/* Dieser Bereich (Sprache: CSS) ist für Positionierung der Bilder und die Animationsgeschwindigkeit zuständig. */
+		
+		/*Animationen (transition). Dauer wird in Sekunden angegeben, etwa "0.5s".*/
+		img {position:absolute;top:0;width:30vh;transition: transform .5s}
+		img:not(.überKnopf) {transition: transform .5s}
+		
+		/*Positionen sollen sich nicht gegenseitig beeinflussen:*/
+		div {position:absolute;}
+		
+		/*Positionen: relativ zur Bildschirmmitte werden die Knöpfe und Hände über die Eigenschaft "margin" um Hundertstel der Höhe (vh) positioniert.*/
+		/*Die Zeigefinger sind im Folgenden auf den Knöpfen; weiter unten ist der Vektor gegeben, mit der sich eine Hand entfernt.*/
+		#knopf1 {width:3vh; height:3vh; border-radius:3vh; background:yellow;opacity:0;   left:50vw; margin-left:-7.6vh; top:50vh; margin-top:-7.5vh;}
+		#knopf2 {width:3vh; height:3vh; border-radius:3vh; background:green;opacity:0;    left:50vw; margin-left:2.8vh; top:50vh; margin-top:-6.7vh;}
+		#knopf3 {width:3vh; height:3vh; border-radius:3vh; background:orange;opacity:0;   left:50vw; margin-left:-8.6vh; top:50vh; margin-top:3.8vh;}
+		#knopf4 {width:3vh; height:3vh; border-radius:3vh; background:blue;opacity:0;     left:50vw; margin-left:2.2vh; top:50vh; margin-top:5.2vh;}
+		#knopf5 {width:3vh; height:3vh; border-radius:3vh; background:red;opacity:0;      left:50vw; margin-left:-9.3vh; top:50vh; margin-top:15.1vh;}
+		#knopf6 {width:3vh; height:3vh; border-radius:3vh; background:pink;opacity:0;     left:50vw; margin-left:2vh; top:50vh; margin-top:16.2vh;}
+		#hand1 {left:50vw; margin-left:-33.2vh; top:50vh; margin-top:-33.8vh;}
+		#hand2 {left:50vw; margin-left:3.5vh; top:50vh; margin-top:-32.9vh;}
+		#hand3 {left:50vw; margin-left:-34.7vh; top:50vh; margin-top:-3.8vh;}
+		#hand4 {left:50vw; margin-left:2.5vh; top:50vh; margin-top:2.0vh;}
+		#hand5 {left:50vw; margin-left:-35vh; top:50vh; margin-top:13.5vh;}
+		#hand6 {left:50vw; margin-left:-0.5vh; top:50vh; margin-top:16.9vh;width:32vh;}	
+		
+		/*Hier die relativen Vektoren der einzelnen Hände beim Wegbewegen.*/
+		/*Die Hände sollen auf Abstand gehen, wenn weder "über Knopf" noch "abspielend".*/
+		#hand1:not(.überKnopf):not(.abspielend) {transform:translate(-28vh, -25vh);}
+		#hand2:not(.überKnopf):not(.abspielend) {transform:translate(28vh, -25vh);}
+		#hand3:not(.überKnopf):not(.abspielend) {transform:translate(-27.5vh, -5vh);}
+		#hand4:not(.überKnopf):not(.abspielend) {transform:translate(29vh, -5vh);}
+		#hand5:not(.überKnopf):not(.abspielend) {transform:translate(-27vh, 5vh);}
+		#hand6:not(.überKnopf):not(.abspielend) {transform:translate(30vh, 5vh);}
+		
+		/*Traditionelle Standardvorgaben im Browser überschreiben*/
+		*::selection {background: transparent;}
+		body, html {width:100%;height:100%; margin:0;padding:0;overflow:hidden;} //Fenster wird voll ausgenutzt; keine Scrollbalken.
+	</style>
+	<script>/* Dieser Bereich (Sprache: JavaScript) lädt die Bilder, Klänge und Knöpfe, und sorgt für Interaktivität. */
+	
+	
+		window.onload = function () {
+			var knopfnummern          = [1,2,3,4,5,6]; // zählt zeilenweise, dann spaltenweise.
+			var animationsreihenfolge = [1,4,5,2,3,6,1]; //für das Intro.
+			var tracksProKnopf        = 6; // Das muss mit den Dateinamen für die Tracks synchronisiert werden. Bei 6 tracksProKnopf gibt es 36 tracks.
+			var letzteTracks          = [null,0,0,0,0,0,0]; // Die je Knopf zuletzt abgespielte Track-Nummer.
+			var aktuellSpielend; // wird später benötigt, um Knöpfe zu stoppen.
+			var audio = document.getElementById ("audio");
+			
+			//Hände und Knöpfe laden
+			var hände = [null];
+			var knöpfe = [null];
+			knopfnummern.forEach (function (i) {
+			
+				//Zunächst laden wir die Bilder für Hände:
+				h = new Image(); h.id='hand'+i; h.src = 'Trolley36/'+i+".png"; hände.push (document.getElementById ('hände').appendChild (h));
+				
+				//Knöpfe sind die Flächen, die auf die Maus reagieren.
+				k = document.createElement ("div"); k.id='knopf'+i; k.innerHTML="&#8203;";
+				knöpfe.push (document.getElementById ('knöpfe').appendChild(k));
+				
+				//Sobald der erste Knopf berührt wird, gilt das Intro als abgebrochen:
+				k.onmouseover=function() { introAbbrechen(); knopfBerühren(i) };
+				//Die folgenden drei Reaktionen auf die Maus sind trivial:
+				k.onmouseout =function() { knopfVerlassen(i) };
+				k.onmousedown=function() { knopfDrücken(i)   };
+				k.onmouseup  =function() { knopfLockern(i)   };
+			})
+			
+			//Hände animieren
+			function knopfBerühren (i) {
+				//zunächst zur Sicherheit alle Knöpfe verlassen, falls das Verlassen nicht registriert wurde:
+				knopfnummern.forEach(function(j) { knopfVerlassen (j) });
+				//und dann die Hand in richtung Knopf animieren
+				hände[i].classList.add('überKnopf');
+			}
+			function knopfVerlassen (i) { hände[i].classList.remove('überKnopf'); knopfLockern (i) } //Knopf muss gelockert werden, falls die Maustaste beim Verlassen noch gedrückt ist.
+			
+			function knopfDrücken   (i) { hände[i].classList.add   ('gedrückt'); hände[i].src = 'Trolley36/'+i+"w.png"; abspielen(i); } //Das Bild wird durch die weiße Variante ersetzt.
+			function knopfLockern   (i) { hände[i].classList.remove('gedrückt'); hände[i].src = 'Trolley36/'+i+".png"; } //Bild wird wieder auf Original gesetzt.
+			
+			function knopfAbpielen  (i) { hände[i].classList.add   ('abspielend'); console.trace (i); }
+			function knopfStoppen   (i) { hände[i].classList.remove('abspielend'); }
+			
+			//Intro starten
+			var animationsdauer = 800; //in Millisekunden; sollte mindestens der Geschwindigkeit entsprechen, die oben festgelegt ist.
+			setTimeout (function() { animiere (animationsreihenfolge) }, 400 ); //beginne nach einer kurzen Pause mit dem Intro.
+			var introAbgebrochen = false; //ist noch nicht abgebrochen.
+			function animiere (übrigeSchritte) {
+				if (introAbgebrochen) return;
+				aktuellerKnopf = übrigeSchritte.shift();
+				knopfBerühren (aktuellerKnopf);
+				setTimeout(function(){ 
+					if (übrigeSchritte.length==0) knopfVerlassen (aktuellerKnopf); else animiere (übrigeSchritte);
+				}, animationsdauer);
+			}
+			function introAbbrechen() { introAbgebrochen =true; }
+			
+			
+			//bei Klick Ton abspielen
+			function abspielen (i) {
+			
+				//Zunächst, falls existent, die vormals spielende Hand erlösen:
+				if (aktuellSpielend) knopfStoppen (aktuellSpielend);
+				//Wir finden für den gewählten Knopf den nächsten Track;
+				//nach 6 (bzw. "tracksProKnopf) fängt es wieder bei 1 an (% ist Modulo):
+				var track = (letzteTracks[i] % tracksProKnopf + 1);
+				//nun ist der neue Track hier der letzte Track:
+				letzteTracks[i] = track;
+				
+				//Die Track-Dateien sind durchnummeriert; die Vielfachen von "tracksProKnopf" sind je die ersten Tracks eines Knopfes.
+				//Den gewählten Track in den Audiospieler laden:
+				audio.src = "Trolley36/track0"+zweistellig ((i-1)*tracksProKnopf+track)+".mp3";
+				//...und sofort abspielen:
+				audio.play();
+				//Die Hand bleibt jetzt über dem Knopf, bis ein anderer gedrückt wird:
+				aktuellSpielend = i; knopfAbpielen (i);
+				//Wenn der Track zuende ist, wird die Hand sich zurückziehen:
+				audio.onended = function() { knopfStoppen (aktuellSpielend); }
+			}
+			
+			
+			//Hilfsfunktionen
+			//führende Null ergänzen bei einstelligen Zahlen:
+			function zweistellig (n) { return n<10?'0'+n:n; }
+		}
+	
+	
+	
+	</script>
+</head>
+
+<body><!--In diesem Bereich stehen nur Platzhalter für die Bilder und das Audio-Element.--!>
+	<div id="trolley" style="background: url('Trolley36/trolley_web.jpg') no-repeat center center fixed;position:fixed; background-size:contain; -moz-background-size:contain; -webkit-background-size:contain; -o-background-size:contain; background-color:white;height:100vh;width:100vw;">&#8203;</div>
+
+	<div id="hände">&#8203;</div>
+	<div id="knöpfe">&#8203;</div>
+	
+	<div id="linkerRand"  style="width:50vw; height: 100vh; margin-right:50%; right:33.2vh; background:white;">&#8203;</div>
+	<div id="rechterRand" style="width:50vw; height: 100vh; margin-left:50%; left:31.45vh; background:white;">&#8203;</div>
+	
+	<audio id="audio"> <source type="audio/mpeg" src=""/> </audio>
+</body>
+</html>

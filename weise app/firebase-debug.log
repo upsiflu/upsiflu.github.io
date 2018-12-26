@@ -1,0 +1,53 @@
+[debug] [2018-12-26T15:44:29.026Z] ----------------------------------------------------------------------
+[debug] [2018-12-26T15:44:29.028Z] Command:       /usr/bin/node /home/f/bin/firebase deploy
+[debug] [2018-12-26T15:44:29.028Z] CLI Version:   3.18.4
+[debug] [2018-12-26T15:44:29.028Z] Platform:      linux
+[debug] [2018-12-26T15:44:29.029Z] Node Version:  v10.11.0
+[debug] [2018-12-26T15:44:29.029Z] Time:          Wed Dec 26 2018 16:44:29 GMT+0100 (Central European Standard Time)
+[debug] [2018-12-26T15:44:29.029Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-12-26T15:44:29.038Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-12-26T15:44:29.039Z] > authorizing via signed-in user
+[debug] [2018-12-26T15:44:29.040Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2018-12-26T15:44:29.041Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ { refresh_token:
+   '1/orSb3z3eTaYwS_mAkIzYyGNgO5xcYnJeV-t_yEy_784SXSARTWuHg3i2oGJR1CS6',
+  client_id:
+   '563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com',
+  client_secret: 'j9iVZfS8kkCEFUPaAeJV0sAi',
+  grant_type: 'refresh_token',
+  scope:
+   'email https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/cloudplatformprojects.readonly https://www.googleapis.com/auth/firebase openid' } 
+ Wed Dec 26 2018 16:44:29 GMT+0100 (Central European Standard Time)
+[debug] [2018-12-26T15:44:29.586Z] <<< HTTP RESPONSE 200
+[debug] [2018-12-26T15:44:29.601Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/flupsitest  
+  
+ Wed Dec 26 2018 16:44:29 GMT+0100 (Central European Standard Time)
+[debug] [2018-12-26T15:44:32.175Z] <<< HTTP RESPONSE 200
+[debug] [2018-12-26T15:44:32.178Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/flupsitest/tokens  
+  
+ Wed Dec 26 2018 16:44:32 GMT+0100 (Central European Standard Time)
+[debug] [2018-12-26T15:44:32.970Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Deploying to 'flupsitest'...
+[info] 
+[info] i  deploying hosting
+[info] i  hosting: preparing public directory for upload...
+[debug] [2018-12-26T15:44:35.215Z] >>> HTTP REQUEST PUT https://deploy.firebase.com/v1/hosting/flupsitest/uploads/-LUfB4kxY9VmniRXD0Xk?fileCount=52&message=  
+  
+ Wed Dec 26 2018 16:44:35 GMT+0100 (Central European Standard Time)
+[debug] [2018-12-26T15:54:10.814Z] <<< HTTP RESPONSE 410
+[debug] [2018-12-26T15:54:10.815Z] <<< HTTP RESPONSE BODY undefined
+[debug] [2018-12-26T15:54:10.820Z] TypeError: Cannot read property 'error' of undefined
+    at module.exports (/home/f/lib/node_modules/firebase-tools/lib/responseToError.js:10:13)
+    at Request._callback (/home/f/lib/node_modules/firebase-tools/lib/api.js:47:25)
+    at Request.self.callback (/home/f/lib/node_modules/firebase-tools/node_modules/request/request.js:186:22)
+    at Request.emit (events.js:182:13)
+    at Request.EventEmitter.emit (domain.js:442:20)
+    at Request.<anonymous> (/home/f/lib/node_modules/firebase-tools/node_modules/request/request.js:1163:10)
+    at Request.emit (events.js:182:13)
+    at Request.EventEmitter.emit (domain.js:442:20)
+    at IncomingMessage.<anonymous> (/home/f/lib/node_modules/firebase-tools/node_modules/request/request.js:1085:12)
+    at Object.onceWrapper (events.js:273:13)
+[error] 
+[error] Error: An unexpected error has occurred.
